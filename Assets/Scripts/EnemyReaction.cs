@@ -21,5 +21,8 @@ public class EnemyReaction : MonoBehaviour
         if (other.CompareTag ("Enemy")) {
             SceneManager.LoadScene ("Scene1");
         }
+        if (other.CompareTag ("Abyss")) {
+            SceneManager.LoadScene ("Scene1");
+        }
     }
 }
