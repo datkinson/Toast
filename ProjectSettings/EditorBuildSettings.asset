@@ -12,9 +12,12 @@ EditorBuildSettings:
     path: Assets/Scene2.unity
     guid: d512452b0b51ffb448db50196405143c
   - enabled: 1
-    path: Assets/Lose.unity
-    guid: d0c28b92bb3b58a4cb3c40780ca505cd
+    path: Assets/Scene3.unity
+    guid: acb3d65d59163444d879a065431538a9
   - enabled: 1
     path: Assets/Win.unity
     guid: 1728b645b80b9a948b2a7c16595d9a18
+  - enabled: 1
+    path: Assets/Lose.unity
+    guid: d0c28b92bb3b58a4cb3c40780ca505cd
   m_configObjects: {}
