@@ -19,9 +19,11 @@ public class EnemyReaction : MonoBehaviour
 
     void OnTriggerEnter2D (Collider2D other){
         if (other.CompareTag ("Enemy")) {
+            Score.ScoreValue = 0;
             SceneManager.LoadScene ("Scene1");
         }
         if (other.CompareTag ("Abyss")) {
+            Score.ScoreValue = 0;
             SceneManager.LoadScene ("Scene1");
         }
         if (other.CompareTag ("Finish")) {
