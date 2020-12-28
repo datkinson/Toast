@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class MelonReaction : MonoBehaviour
+public class ItemReaction : MonoBehaviour
 {
+
     public static int scoreIncrease;
     // Start is called before the first frame update
     void Start()
@@ -22,8 +22,11 @@ public class MelonReaction : MonoBehaviour
     }
 
     void OnTriggerEnter2D (Collider2D other){
-        if (other.CompareTag ("Melon")) {
-            scoreIncrease = 1;
+        if (other.CompareTag ("Gem")) {
+            scoreIncrease = 5;
+            if (!State.items.Contains("+ " + other.gameObject.name)) {
+                State.items.Add("+ " + other.gameObject.name);
+            }
             Destroy(other.gameObject);
         }
     }
