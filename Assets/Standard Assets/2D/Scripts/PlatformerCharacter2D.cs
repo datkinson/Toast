@@ -16,6 +16,7 @@ namespace UnityStandardAssets._2D
         const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
         private bool m_Grounded;            // Whether or not the player is grounded.
         private Transform m_WallCheck;    // A position marking where to check if the player is touching a wall.
+        private Transform m_WallCheckBack;    // A position marking where to check if the player is touching a wall from behind.
         const float k_WalledRadius = .1f; // Radius of the overlap circle to determine if walled
         private bool m_Walled;            // Whether or not the player is walled.
         private Transform m_CeilingCheck;   // A position marking where to check for ceilings
@@ -32,6 +33,7 @@ namespace UnityStandardAssets._2D
             // Setting up references.
             m_GroundCheck = transform.Find("GroundCheck");
             m_WallCheck = transform.Find("WallCheck");
+            m_WallCheckBack = transform.Find("WallCheckBack");
             m_CeilingCheck = transform.Find("CeilingCheck");
             m_Anim = GetComponent<Animator>();
             m_Rigidbody2D = GetComponent<Rigidbody2D>();
@@ -60,6 +62,14 @@ namespace UnityStandardAssets._2D
             for (int i = 0; i < wallColliders.Length; i++)
             {
                 if (wallColliders[i].gameObject != gameObject) {
+                    m_Walled = true;
+                    // Debug.Log("Walled: True");
+                }
+            }
+            Collider2D[] wallBackColliders = Physics2D.OverlapCircleAll(m_WallCheckBack.position, k_WalledRadius, m_WhatIsGround);
+            for (int i = 0; i < wallBackColliders.Length; i++)
+            {
+                if (wallBackColliders[i].gameObject != gameObject) {
                     m_Walled = true;
                     // Debug.Log("Walled: True");
                 }
