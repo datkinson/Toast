@@ -6,20 +6,19 @@ namespace UnityStandardAssets._2D
 {
     public class PlatformerCharacter2D : MonoBehaviour
     {
-        [SerializeField] private float m_MaxSpeed = 10f;                    // The fastest the player can travel in the x axis.
-        [SerializeField] private float m_JumpForce = 400f;                  // Amount of force added when the player jumps.
-        [Range(0, 1)] [SerializeField] private float m_CrouchSpeed = .36f;  // Amount of maxSpeed applied to crouching movement. 1 = 100%
-        [SerializeField] private bool m_AirControl = false;                 // Whether or not a player can steer while jumping;
+        [SerializeField] private float m_MovementForce = 25;
+        [SerializeField] public float m_JumpForce = 10f;                  // Amount of force added when the player jumps.
+        [SerializeField] private Vector2 m_WallJumpForce = new Vector2(300f, 100f);
         [SerializeField] private LayerMask m_WhatIsGround;                  // A mask determining what is ground to the character
 
-        private Transform m_GroundCheck;    // A position marking where to check if the player is grounded.
+        [SerializeField] public Transform m_GroundCheck;    // A position marking where to check if the player is grounded.
         const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
         private bool m_Grounded;            // Whether or not the player is grounded.
-        private Transform m_WallCheck;    // A position marking where to check if the player is touching a wall.
-        private Transform m_WallCheckBack;    // A position marking where to check if the player is touching a wall from behind.
+        [SerializeField] public Transform m_WallCheck;    // A position marking where to check if the player is touching a wall.
+        [SerializeField] public Transform m_WallCheckBack;    // A position marking where to check if the player is touching a wall from behind.
         const float k_WalledRadius = .1f; // Radius of the overlap circle to determine if walled
         private bool m_Walled;            // Whether or not the player is walled.
-        private Transform m_CeilingCheck;   // A position marking where to check for ceilings
+        [SerializeField] public Transform m_CeilingCheck;   // A position marking where to check for ceilings
         const float k_CeilingRadius = .01f; // Radius of the overlap circle to determine if the player can stand up
         private Animator m_Anim;            // Reference to the player's animator component.
         private Rigidbody2D m_Rigidbody2D;
@@ -31,10 +30,6 @@ namespace UnityStandardAssets._2D
         private void Awake()
         {
             // Setting up references.
-            m_GroundCheck = transform.Find("GroundCheck");
-            m_WallCheck = transform.Find("WallCheck");
-            m_WallCheckBack = transform.Find("WallCheckBack");
-            m_CeilingCheck = transform.Find("CeilingCheck");
             m_Anim = GetComponent<Animator>();
             m_Rigidbody2D = GetComponent<Rigidbody2D>();
         }
@@ -66,12 +61,12 @@ namespace UnityStandardAssets._2D
                     // Debug.Log("Walled: True");
                 }
             }
-            Collider2D[] wallBackColliders = Physics2D.OverlapCircleAll(m_WallCheckBack.position, k_WalledRadius, m_WhatIsGround);
-            for (int i = 0; i < wallBackColliders.Length; i++)
+            Collider2D[] ceilingColliders = Physics2D.OverlapCircleAll(m_CeilingCheck.position, k_CeilingRadius, m_WhatIsGround);
+            for (int i = 0; i < ceilingColliders.Length; i++)
             {
-                if (wallBackColliders[i].gameObject != gameObject) {
-                    m_Walled = true;
-                    // Debug.Log("Walled: True");
+                if (ceilingColliders[i].gameObject != gameObject) {
+                    Debug.Log("Y Velocity: " +  m_Rigidbody2D.velocity.y);
+                    m_Rigidbody2D.AddForce(new Vector2(0, -m_Rigidbody2D.velocity.y * m_Rigidbody2D.mass));
                 }
             }
             if (!m_Walled) {
@@ -83,45 +78,26 @@ namespace UnityStandardAssets._2D
         }
 
 
-        public void Move(float move, bool crouch, bool jump)
+        public void Move(float move, bool jump)
         {
-            // If crouching, check to see if the character can stand up
-            if (!crouch && m_Anim.GetBool("Crouch"))
+            // The Speed animator parameter is set to the absolute value of the horizontal input.
+            m_Anim.SetFloat("Speed", Mathf.Abs(move));
+
+            // Move the character
+            // m_Rigidbody2D.velocity = new Vector2(move*m_MovementForce, m_Rigidbody2D.velocity.y);
+            m_Rigidbody2D.AddForce(new Vector2(move*m_MovementForce, 0));
+
+            // If the input is moving the player right and the player is facing left...
+            if (move > 0 && !m_FacingRight)
             {
-                // If the character has a ceiling preventing them from standing up, keep them crouching
-                if (Physics2D.OverlapCircle(m_CeilingCheck.position, k_CeilingRadius, m_WhatIsGround))
-                {
-                    crouch = true;
-                }
+                // ... flip the player.
+                Flip();
             }
-
-            // Set whether or not the character is crouching in the animator
-            m_Anim.SetBool("Crouch", crouch);
-
-            //only control the player if grounded or airControl is turned on
-            if (m_Grounded || m_AirControl)
+                // Otherwise if the input is moving the player left and the player is facing right...
+            else if (move < 0 && m_FacingRight)
             {
-                // Reduce the speed if crouching by the crouchSpeed multiplier
-                move = (crouch ? move*m_CrouchSpeed : move);
-
-                // The Speed animator parameter is set to the absolute value of the horizontal input.
-                m_Anim.SetFloat("Speed", Mathf.Abs(move));
-
-                // Move the character
-                m_Rigidbody2D.velocity = new Vector2(move*m_MaxSpeed, m_Rigidbody2D.velocity.y);
-
-                // If the input is moving the player right and the player is facing left...
-                if (move > 0 && !m_FacingRight)
-                {
-                    // ... flip the player.
-                    Flip();
-                }
-                    // Otherwise if the input is moving the player left and the player is facing right...
-                else if (move < 0 && m_FacingRight)
-                {
-                    // ... flip the player.
-                    Flip();
-                }
+                // ... flip the player.
+                Flip();
             }
             // If the player should jump...
             if (m_Grounded && jump && m_Anim.GetBool("Ground"))
@@ -130,17 +106,23 @@ namespace UnityStandardAssets._2D
                 m_Grounded = false;
                 m_Anim.SetBool("Ground", false);
                 m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+                Debug.Log("Jump");
                 // jumpsLeft -= 1;
             }else {
                 if (m_Walled && jump && canWallJump)
                 {
                     // Add a vertical force to the player.
-                    m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+                    if (m_FacingRight) {
+                       m_Rigidbody2D.AddForce(m_WallJumpForce * new Vector2(-1, 1));
+                    } else {
+                       m_Rigidbody2D.AddForce(m_WallJumpForce);
+                    }
                     // Add a horizontal force to the player.
-                    // m_Anim.SetFloat("Speed", Mathf.Abs(m_MaxSpeed));
-                    m_Rigidbody2D.velocity = new Vector2(-m_MaxSpeed, -m_Rigidbody2D.velocity.y);
-                    Debug.Log("Wall Jump");
+                    // m_Anim.SetFloat("Speed", Mathf.Abs(m_MovementForce));
+                    // m_Rigidbody2D.velocity = new Vector2(-m_MovementForce, -m_Rigidbody2D.velocity.y);
+                    // Debug.Log("Wall Jump");
                     canWallJump = false;
+                    Flip();
                 }
             }
         }

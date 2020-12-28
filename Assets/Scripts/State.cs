@@ -22,13 +22,9 @@ public class State : MonoBehaviour
     {}
 
     public static void nextScene() {
-        Debug.Log("State loading next scene");
         Scene scene = SceneManager.GetActiveScene();
         int index = scenes.IndexOf(scene.name);
-        Debug.Log("Current scene index: " + index);
         currentScene = index + 1;
-        Debug.Log("Next scene index: " + currentScene);
-        Debug.Log("Next scene name: " + scenes[currentScene]);
         SceneManager.LoadScene (scenes[index + 1]);
     }
 
