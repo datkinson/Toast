@@ -51,7 +51,7 @@ GameObject:
   - component: {fileID: 1948217047}
   - component: {fileID: 1948217055}
   m_Layer: 0
-  m_Name: CharacterRobotBoy
+  m_Name: CharacterToast
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -194,8 +194,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_MovementForce: 25
-  m_JumpForce: 800
-  m_WallJumpForce: {x: 200, y: 200}
+  m_JumpForce: 400
+  m_WallJumpForce: {x: 300, y: 100}
   m_WhatIsGround:
     serializedVersion: 2
     m_Bits: 4294967295
