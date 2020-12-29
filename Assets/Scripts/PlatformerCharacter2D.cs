@@ -6,8 +6,8 @@ namespace UnityStandardAssets._2D
 {
     public class PlatformerCharacter2D : MonoBehaviour
     {
-        [SerializeField] private float m_MovementForce = 25;
-        [SerializeField] public float m_JumpForce = 400f;                  // Amount of force added when the player jumps.
+        [SerializeField] private float m_MovementForce = 20;
+        [SerializeField] public float m_JumpForce = 250f;                  // Amount of force added when the player jumps.
         [SerializeField] private Vector2 m_WallJumpForce = new Vector2(300f, 100f);
         [SerializeField] private LayerMask m_WhatIsGround;                  // A mask determining what is ground to the character
 
