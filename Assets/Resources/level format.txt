@@ -1,0 +1,12 @@
+spawnX;SpawnY;
+
+numboxes;
+
+
+box xpos;box ypos;box width;box height;...box xpos;box ypos;box width;box height;
+
+nummelons;
+
+melon xpos;melon ypos;...melon xpos;melon ypos;
+
+enemyID;boolean for visible or not visible;

@@ -144,8 +144,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e82e98bd478e57f4d95dd16cdca6da97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 5
-  distance: 5
+  movementSpeed: 2
+  distance: 0.2
   groundDetection: {fileID: 3973134135241278366}
 --- !u!1 &3973134135241278367
 GameObject:

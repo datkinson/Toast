@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    [SerializeField] private float movementSpeed = 3;
-    [SerializeField] private float distance = 0.5f;
+    [SerializeField] private float movementSpeed = 2;
+    [SerializeField] private float distance = 0.2f;
     private bool movingRight = true;
     private Vector2 detectionDirection = Vector2.right;
     public Transform groundDetection;
@@ -40,7 +40,7 @@ public class EnemyMovement : MonoBehaviour
             if(wallInfo.collider.name == "Tilemap") {
                 Flip();
             }
-            Debug.Log("wallInfo.collider.name: " + wallInfo.collider.name);
+            // Debug.Log("wallInfo.collider.name: " + wallInfo.collider.name);
         }
     }
 }

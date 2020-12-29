@@ -34,7 +34,6 @@ namespace UnityStandardAssets._2D
             m_Rigidbody2D = GetComponent<Rigidbody2D>();
         }
 
-
         private void FixedUpdate()
         {
             m_Grounded = false;
@@ -58,7 +57,6 @@ namespace UnityStandardAssets._2D
             {
                 if (wallColliders[i].gameObject != gameObject) {
                     m_Walled = true;
-                    // Debug.Log("Walled: True");
                 }
             }
             Collider2D[] ceilingColliders = Physics2D.OverlapCircleAll(m_CeilingCheck.position, k_CeilingRadius, m_WhatIsGround);
@@ -84,7 +82,6 @@ namespace UnityStandardAssets._2D
             m_Anim.SetFloat("Speed", Mathf.Abs(move));
 
             // Move the character
-            // m_Rigidbody2D.velocity = new Vector2(move*m_MovementForce, m_Rigidbody2D.velocity.y);
             m_Rigidbody2D.AddForce(new Vector2(move*m_MovementForce, 0));
 
             // If the input is moving the player right and the player is facing left...
@@ -106,8 +103,6 @@ namespace UnityStandardAssets._2D
                 m_Grounded = false;
                 m_Anim.SetBool("Ground", false);
                 m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
-                Debug.Log("Jump");
-                // jumpsLeft -= 1;
             }else {
                 if (m_Walled && jump && canWallJump)
                 {
@@ -117,23 +112,15 @@ namespace UnityStandardAssets._2D
                     } else {
                        m_Rigidbody2D.AddForce(m_WallJumpForce);
                     }
-                    // Add a horizontal force to the player.
-                    // m_Anim.SetFloat("Speed", Mathf.Abs(m_MovementForce));
-                    // m_Rigidbody2D.velocity = new Vector2(-m_MovementForce, -m_Rigidbody2D.velocity.y);
-                    // Debug.Log("Wall Jump");
                     canWallJump = false;
                     Flip();
                 }
             }
         }
 
-
         private void Flip()
         {
-            // Switch the way the player is labelled as facing.
             m_FacingRight = !m_FacingRight;
-
-            // Multiply the player's x local scale by -1.
             Vector3 theScale = transform.localScale;
             theScale.x *= -1;
             transform.localScale = theScale;
