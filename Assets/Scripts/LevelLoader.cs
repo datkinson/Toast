@@ -25,22 +25,32 @@ public class LevelLoader : MonoBehaviour
     private int melonProperties = 2;
     private int itemYOffset = 0;
     private int playerWorldYOffset = 8;
-    [SerializeField] public Tile groundTile;
-    [SerializeField] public Tilemap map;
-    [SerializeField] public GameObject playerObject;
-    [SerializeField] public GameObject melonObject;
-    [SerializeField] public GameObject enemyObject;
-    [SerializeField] public GameObject wallObject;
-    [SerializeField] public Vector3 pos = new Vector3(0, 0, 0);
-    [SerializeField] public List<(Vector2, Vector2)> rectangles;
+    [SerializeField] private Tile groundTile;
+    [SerializeField] private Tilemap map;
+    [SerializeField] private GameObject playerObject;
+    [SerializeField] private GameObject melonObject;
+    [SerializeField] private GameObject enemyObject;
+    [SerializeField] private GameObject wallObject;
+    [SerializeField] private Vector3 pos = new Vector3(0, 0, 0);
+    [SerializeField] private List<(Vector2, Vector2)> rectangles;
+
+    public GameObject MelonObject { get => melonObject; set => melonObject = value; }
+    public GameObject PlayerObject { get => playerObject; set => playerObject = value; }
+    public GameObject EnemyObject { get => enemyObject; set => enemyObject = value; }
+    public GameObject WallObject { get => wallObject; set => wallObject = value; }
+    public Vector3 Pos { get => pos; set => pos = value; }
+    public List<(Vector2, Vector2)> Rectangles { get => rectangles; set => rectangles = value; }
+    public Tilemap Map { get => map; set => map = value; }
+    public Tile GroundTile { get => groundTile; set => groundTile = value; }
+
     void Start()
     {
-        rectangles = new List<(Vector2, Vector2)>();
+        Rectangles = new List<(Vector2, Vector2)>();
         GameObject parentGameObject = new GameObject();
         Canvas canvas = parentGameObject.AddComponent<Canvas>();
 
-        var xOffset = map.cellBounds.size.x / 2;
-        var yOffset = map.cellBounds.size.y / 2;
+        var xOffset = Map.cellBounds.size.x / 2;
+        var yOffset = Map.cellBounds.size.y / 2;
         TextAsset levelData=(TextAsset)Resources.Load("lvl" + level);
         string[] levelComponents = levelData.ToString().Split(';');
         var player = new Player {
@@ -51,7 +61,7 @@ public class LevelLoader : MonoBehaviour
         var playerXOffset = player.X - xOffset;
         var playerYOffset = player.Y - yOffset;
         // playerObject.transform.Translate((playerXOffset - playerObject.transform.position.x), (playerYOffset - playerObject.transform.position.y), 0);
-        Instantiate(playerObject, new Vector3(player.X, (-player.Y), 0), Quaternion.identity);
+        Instantiate(PlayerObject, new Vector3(player.X, (-player.Y), 0), Quaternion.identity);
         var environmentItems = int.Parse(levelComponents[2]);
         var itterator = 2;
         List<EnvironmentItem> environments = new List<EnvironmentItem>();
@@ -67,19 +77,13 @@ public class LevelLoader : MonoBehaviour
             itterator++;
 
             environmentItem.Width = Convert.ToSingle(levelComponents[itterator]) / unitDivider;
-            //if(environmentItem.Width < 1){
-            //    environmentItem.Width = 1;
-            //}
             itterator++;
 
             environmentItem.Height = -Convert.ToSingle(levelComponents[itterator]) / unitDivider;
-            //if(environmentItem.Height < 1){
-            //    environmentItem.Height = 1;
-            //}
 
-            rectangles.Add((new Vector2(environmentItem.X, environmentItem.Y), new Vector2(environmentItem.Width, environmentItem.Height)));
+            Rectangles.Add((new Vector2(environmentItem.X, environmentItem.Y), new Vector2(environmentItem.Width, environmentItem.Height)));
             environments.Add(environmentItem);
-            var wallInstance = Instantiate(wallObject);
+            var wallInstance = Instantiate(WallObject);
             wallInstance.transform.localScale = new Vector3(environmentItem.Width, environmentItem.Height, 1);
             wallInstance.transform.position = new Vector3(environmentItem.X + (environmentItem.Width / 2), environmentItem.Y + (environmentItem.Height / 2), 0);
         }
@@ -95,7 +99,7 @@ public class LevelLoader : MonoBehaviour
             itterator++;
             melonItem["y"] = -(Convert.ToSingle(levelComponents[itterator]) / unitDivider) + itemYOffset;
             melons.Add(melonItem);
-            var melonInstance = Instantiate(melonObject, new Vector3(melonItem["x"], melonItem["y"], 0), Quaternion.identity);
+            var melonInstance = Instantiate(MelonObject, new Vector3(melonItem["x"], melonItem["y"], 0), Quaternion.identity);
             // melonInstance.transform.position = new Vector3(melonItem["x"] + (), melonItem["y"] + ());
         }
         // Get Enemies
@@ -110,31 +114,9 @@ public class LevelLoader : MonoBehaviour
             itterator++;
             if(Convert.ToBoolean(levelComponents[itterator])) {
                 enemies.Add(enemyItem);
-                Instantiate(enemyObject, new Vector3(enemyItem["x"] - xOffset, enemyItem["y"] - yOffset, 0), Quaternion.identity);
+                Instantiate(EnemyObject, new Vector3(enemyItem["x"] - xOffset, enemyItem["y"] - yOffset, 0), Quaternion.identity);
             }
         }
-        // int environmentItemIndex = 0;
-        // foreach (var item in environments)
-        // {
-        //     // int x = (item["x"] / unitDivider) - xOffset;
-        //     var x = item.X - xOffset;
-        //     // int y = (item["y"] / unitDivider) - yOffset;
-        //     var y = item.Y - yOffset;
-        //     // int width = (item["width"] / unitDivider);
-        //     var width = item.Width;
-        //     // int height = (item["height"] / unitDivider);
-        //     var height = item.Height;
-        //     // Debug.Log("Environment Item: " + (environmentItemIndex + 1));
-        //     // Debug.Log(String.Format("x, y, width, height, x+width, y+height\n {0}, {1}, {2}, {3}, {4}, {5}", x, y, width, height, x+width, y+height));
-        //     for (var i = x; i < x+width; i++)
-        //     {
-        //         for (var j = y; j < y+height; j++)
-        //         {
-        //             map.SetTile(new Vector3Int((int)i, (int)j, 0), groundTile);
-        //         }
-        //     }
-        //     environmentItemIndex++;
-        // }
     }
 
     void Update()
@@ -164,10 +146,10 @@ public class LevelLoader : MonoBehaviour
         }
     }
     public void OnDrawGizmos() {
-        if (rectangles == null) {
+        if (Rectangles == null) {
             return;
         }
-        foreach (var (position, size) in rectangles) {
+        foreach (var (position, size) in Rectangles) {
             Gizmos.color = Color.magenta;
             Gizmos.DrawLine(position, new Vector2(position.x + size.x, position.y));
             Gizmos.DrawLine(position, new Vector2(position.x, position.y + size.y));
